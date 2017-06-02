@@ -1,0 +1,81 @@
+doctype html
+/! Check out the mobile version of this site
+/! Also this page is javascript free
+html lang="eng"
+	head
+		meta charset="utf-8"
+		title Filesystems
+		link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,300i,600" rel="stylesheet"
+		link type="text/css" rel="stylesheet" href="filesystems.css"
+		meta name="viewport" content="width=device-width"
+	body
+		input type="checkbox" id="color_change" alt="button for triggering dark mode"
+		label id="dark_mode_on" for="color_change" 💡
+		
+		input type="checkbox" id="show_menu_check" alt="button for triggering mobile menu overlay"
+		label id="show_menu" for="show_menu_check" ☰
+		
+		h1 id="title_for_mobile" Filesystems
+		div class="content" REPLACE
+			
+		
+		div class="sidebar"
+			h1
+				a href="./index.html" alt="Filesystems" title="Filesystems" id="title" Filesystems
+			h3 An overview
+			h3 Table of Contents
+			hr
+			ol id="table_of_contents"
+				li 
+					
+					a href="#intro" Intro
+				li
+					a href="#what_is" What is a Filesystem?
+					ol
+						li
+							a href="#trend" The Progression of the Filesystem
+						li
+							a href="#hardware" Hardware
+						li
+							a href="#FAT" FAT
+							ol
+								li
+									a href="#fat_versions" Versions of FAT
+								li
+									a href="#fat_datastructure" File Allocation Table
+								li 
+									a href="#fat_problems" Problems with FAT
+								li
+									a href="#fat_relevancy" FAT's Relevancy Today
+				li
+					a href="#ZFS" ZFS
+					ol
+						li
+							a href="#pools" ZFS Storage Pools
+						li
+							a href="#data_integrity" Data Integrity
+							ol
+								li
+									a href="#integrity_need" The need for Data Integrity
+								li
+									a href="#tools" Tools of Error Detection and Correction
+								li 
+									a href="#atomics" Atomics
+								li
+									a href="#error_prevention" Error Prevention 
+				li
+					a href="#btrfs" Btrfs
+					ol
+						li
+							a href="compression" Compression
+				li
+					a href="#defaults" The Defaults
+				li
+					a href="#conclusion" Conclusion 
+				li
+					a href="#recommended_reading" Recommended Reading
+
+			h3 Info
+			hr
+			p Author: Grant Merola
+			a href="mailto:grantmerola@gmail.comSubject=Filesystems%20Report%20Contact%20Form" alt="Contact info" Contact

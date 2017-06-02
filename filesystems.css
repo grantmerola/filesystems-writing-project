@@ -1,0 +1,141 @@
+body{
+	background-color: white;
+	font-family: 'Source Sans Pro', sans-serif;
+	font-size: 14pt;
+	color: black;
+	margin: 0px;
+}
+ul{
+	list-style-type: none;
+}
+p{
+	font-size: 14pt;
+}
+h5{
+	margin: 5px;
+}
+hr{
+	margin: 5px;
+}
+/*link css */
+a:link {
+    text-decoration: none;
+}
+a:visited {
+    text-decoration: none;   
+    color: purple; 
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/*class css*/
+.content{
+	margin-left: 310px;
+	padding: 20px;
+}
+
+.sidebar{
+	padding: 10px;
+	border-right-style: solid;
+	border-right-width: 2px;
+	border-right-color: #B0BEC5;
+	background-color: #e0e0e0;
+	position: fixed;
+	top: 0;
+	bottom: 0;
+	left: 0px;
+	width: 300px;
+	overflow: scroll;
+}
+/* id css*/
+#title{
+	text-decoration: none;
+	color: black;
+}
+#table_of_contents{
+	height: 350px;
+	overflow: scroll;
+}
+
+/* change background button*/
+#color_change[type=checkbox]{
+	display: none;
+}
+#dark_mode_on{
+	position: fixed;
+	right: 25px;
+}
+/* color changes made for dark mode*/
+#color_change:checked ~ .sidebar{
+	background-color: #616161;
+}
+#color_change:checked ~ .sidebar a:link{
+	color:#29B6F6 ;
+}
+#color_change:checked ~ .sidebar a:visited{
+	color: #424242;
+}
+#color_change:checked ~ .content{
+	background-color: black;
+	color: white;
+}
+#color_change:checked ~ .content a:link{
+	color:#29B6F6 ;
+}
+#color_change:checked ~ .content a:visited{
+	color: #424242;
+}
+#color_change:checked ~ .content img{
+	background-color: white;
+}
+/*custom color changes*/
+#color_change:checked ~ #title_for_mobile{
+	background-color: black;
+	color: white;
+}
+#color_change:checked ~ #show_menu{
+	color: white;
+}
+#color_change:checked ~ .sidebar #title{
+	color: black;
+}
+
+/*defaults for mobile elms that change in resize*/
+#show_menu_check {
+	display: none;
+}
+#show_menu {
+	display: none;
+	position: fixed;
+	right: 0;
+}
+#title_for_mobile{
+	font-size: 0px;
+	margin-bottom: 0px;
+}
+/*mobile css*/
+@media screen and (max-width: 740px){
+	#show_menu {
+		display: block;
+		align-content: right;
+		font-size: 20px;
+	}
+	.sidebar{
+			display: none;
+		}
+	.content{
+		margin-left: 0px
+	}
+	#show_menu_check:checked ~ .sidebar{
+			display: block;
+		}
+	#title_for_mobile{
+			font-size: 2em;
+
+		}
+	}
+
+
+}

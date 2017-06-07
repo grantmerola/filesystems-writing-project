@@ -17,6 +17,9 @@ h5{
 hr{
 	margin: 5px;
 }
+img{
+	max-width: 100%;
+}
 /*link css */
 a:link {
     text-decoration: none;
@@ -65,7 +68,7 @@ a:hover {
 }
 #dark_mode_on{
 	position: fixed;
-	right: 25px;
+	right: 10px;
 }
 /* color changes made for dark mode*/
 #color_change:checked ~ .sidebar{
@@ -109,32 +112,38 @@ a:hover {
 #show_menu {
 	display: none;
 	position: fixed;
-	right: 0;
+	right: 10px;
+	z-index: 1;
 }
 #title_for_mobile{
 	font-size: 0px;
 	margin-bottom: 0px;
+	margin-top: 0px;
 }
 /*mobile css*/
 @media screen and (max-width: 740px){
-	#show_menu {
-		display: block;
-		align-content: right;
-		font-size: 20px;
-	}
-	.sidebar{
-			display: none;
-		}
-	.content{
-		margin-left: 0px
-	}
-	#show_menu_check:checked ~ .sidebar{
+		#show_menu {
 			display: block;
+			align-content: right;
+			font-size: 20px;
 		}
-	#title_for_mobile{
-			font-size: 2em;
+		.sidebar{
+				display: none;
+		}
+		.content{
+			margin-left: 0px
+		}
+		#show_menu_check:checked ~ .sidebar{
+				display: block;
+		}
+		#title_for_mobile{
+				font-size: 2em;
 
 		}
+		#dark_mode_on{
+		right: 35px;
+		}
+	
 	}
 
 

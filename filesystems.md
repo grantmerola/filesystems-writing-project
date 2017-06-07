@@ -8,12 +8,12 @@ Most users never know that the filesystem exists, this is partially by design th
 ##### <a name="trend">The progression of the filesystem</a>
 There is a trend worth noting of hiding direct file access in newer OSs. For example early OSs were tightly coupled with the file hierarchy mostly out of necessity due to the limited computing power. With the advent of the GUI OS the file hierarchy was still visible but was constrained by preordained GUI actions. But with some of the most recent mobile OSs, notably iOS, the filesystem has all but disappeared. Android takes a more measured approach and still has a file viewer but files are clearly second class citizens. This was done so as to avoid many/all of the complexities of filesystems, however there were different complexities introduced as a byproduct of this shift away from the file system. Whether this shift is for better or worse still remains to be seen, more likely than not one devil has been traded for another. Regardless the filesystem will remain important in the internals and technical people will still need to interact with it. 
 
-So at a macro scale a filesystem is something the user interacts with to manage files, directly or indirectly. But for an audience of the technical this is not sufficient or interesting. So as literally as possible what is(or perhaps more accurately) what composes an filesystem? Let's start at the bottom and work our way up. 
+So at a macro scale a filesystem is something the user interacts with to manage files, directly or indirectly. But for an audience of the technical this is not sufficient or interesting. So as literally as possible what is(or perhaps more accurately) what composes a filesystem? Let's start at the bottom and work our way up. 
 ##### <a name="hardware">Hardware</a>
-At the bottom is bits,(as hopefully you know) everything in a computer is made of bits. Information can be [stored](https://www.w3.org/International/questions/qa-what-is-encoding) in bits, for instance a file is a collection of bits.
+At the bottom is bits, everything in a computer is made up of bits. Information can be [stored](https://www.w3.org/International/questions/qa-what-is-encoding) in bits, for instance a file is a collection of bits.
 
 But where are the bits, things don't **just** exist?
-The bits exist in long term storage on the disk, also in [RAM](https://techterms.com/definition/ram) but since filesystems primarily deal with the disk we will only cover that. A Hard Drive Disk uses [magnetic storage](http://ffden-2.phys.uaf.edu/211.fall2000.web.projects/J%20Kugler/magnetic.html) to store information, the disk is divided up into:
+The bits exist in long term storage on the disk, also in [RAM](https://techterms.com/definition/ram) but since filesystems primarily deal with the disk we will only cover that. A Hard Disk Drive uses [magnetic storage](http://ffden-2.phys.uaf.edu/211.fall2000.web.projects/J%20Kugler/magnetic.html) to store information, the disk is divided up into, in decreasing order of magnitude:
 
 - **Platters** - Platters are the actual disks that are on the are in the drive, there may be more than one per drive casing 
 - **[Tracks](http://www.ntfs.com/hard-disk-basics.htm#MakingTracks)** - Tracks are rings on the disks where data is stored, there are thousands of tracks on a platter.
@@ -50,7 +50,7 @@ But what if we want to edit a file? Well if you want to make the file smaller no
 
 FAT is old and relatively simple, there number of things that are lacking in the feature department. Many of the things that are now considered normal filesystem features were not even considered in the initial design of FAT, such as compression or encryption. Later many of these features were added in, but most were dirty hacks because the filesystem was never designed for it and backward compatibility was a goal. For instance name length may be the best example of this, when the filesystem was first introduced the name size was very small, but was expanded in later versions. However in later versions to keep backward compatibility this feature was implemented as a [hack](https://staff.washington.edu/dittrich/misc/fatgen103.pdf#page=28). 
 
-Another example of a missing features is [**Data Integrity**](#data_integrity), many filesystems may take steps to insure that your data is safe often at the cost of speed or space efficiency. FAT at first didn't do anything, but eventually implemented a feature where copy of the fat would be made occasionally and stored. So that at the very least if the fat was corrupted, an unlikely but potentially causing complete data loss, the filesystem could be restored to that point in time and only some files would be lost. As you can imagine this is not a great system, what if data was corrupted but didn't cause problems for a long time, causing the backups to be corrupted too. Or what if it had been a while since a copy of the fat had been made all that new work is gone. And this doesn't help at all is the integrity of the file contents, arguably the more important stuff. 
+Another example of a missing features is [**Data Integrity**](#data_integrity), many filesystems may take steps to insure that your data is safe often at the cost of speed or space efficiency. FAT at first didn't do anything, but eventually implemented a feature where copy of the fat would be made occasionally and stored. So that at the very least if the fat was corrupted, an unlikely but potentially causing complete data loss, the filesystem could be restored to that point in time and only some files would be lost. As you can imagine this is not a great system, what if data was corrupted but didn't cause problems for a long time, causing the backups to be corrupted too. Or what if it had been a while since a copy of the fat had been made. All that new work is gone. And this doesn't help at all the integrity of the file contents, arguably the more important stuff. 
 
 ##### <a name="fat_relevancy"> FAT's Relevancy Today </a>
 Although Fat lacks many features that doesn't make it bad or even useless filesystem. As all filesystems do, FAT makes trade offs. Trade offs for speed and storage size at the cost of many features. These trade offs made more sense in a time of much more limited computing power and storage space. But today with our [GHz](https://techterms.com/definition/gigahertz) processors and [TB](https://techterms.com/definition/terabyte) hard drives, the trade offs that FAT made, make far less sense today. However FAT is sill used today in some low power computing environments because the trade offs it makes *are* worth it. It is also worth noting that the backward compatible nature of FAT make is at popular file interchange format between other filesystems.
@@ -63,9 +63,9 @@ ZFS [goals](http://queue.acm.org/detail.cfm?id=1317400):
 
 1. [**Simple Storage Management**](#pools)
 2. [**Data Integrity**](#data_integrity) 
-3. Performance
+3. [**Performance**](#btrfs)
 
-At scale.
+Whats more ZFS wanted to achieve these goals at scale.
 
 ##### <a name="pools">ZFS Storage Pools</a>
 
@@ -75,11 +75,11 @@ A more traditional filesystem has clear boundary especially down toward the hard
 
 ### <a name="data_integrity">Data Integrity</a>
 
-One of the primary focuses and perhaps what ZFS is best known for is data integrity. Data integrity is something of a broad topic but basically the goal is to insure that none of the data is ever changed unintentionally, it can generally be broken up into three topics error prevention, error detection, and data correction.
+One of the primary focuses and perhaps what ZFS is best known for is data integrity. Data integrity is something of a broad topic but basically the goal is to insure that none of the data is ever changed unintentionally, it can generally be broken up into three topics: error prevention, error detection, and data correction.
 
 ##### <a name="integrity_need"> The need for Data Integrity </a>
 
-Modern hardware is very reliable however errors do occur, often errors will be caught by error detection and correction systems on the hardware itself, even when errors are not caught it may not effect anything. All of this contributes to programmers trusting the hardware, when errors are so rare why take the time and overhead to check that what came back from the disk is what you think was. But when a lot the internal systems programs were designed a GB would have been an enormous amount of memory, who cares about 1 error every 10 GB when it would take decades to run through 10 GB, and even then it still might not matter. In the intervening years the hardware has gotten a bit better and when we can process TB of data quickly suddenly 1 error every 10 GB adds up fast. To quote Jeff Bonwick one of the initial engineers of ZFS:
+Modern hardware is very reliable however errors do occur. Often errors will be caught by error detection and correction systems on the hardware itself. Even when errors are not caught it may not effect anything. All of this contributes to programmers trusting the hardware, when errors are so rare why take the time and overhead to check what came back from the disk is what you think was. But when a lot the internal systems programs were designed a GB would have been an enormous amount of memory, who cares about 1 error every 10 GB when it would take decades to run through 10 GB, and even then it still might not matter. In the intervening years the hardware has gotten a bit better and when we can process TB of data quickly suddenly 1 error every 10 GB adds up fast. To quote Jeff Bonwick one of the initial engineers of ZFS:
 
 >*"One thing that has changed, as Bill already mentioned, is that the error rates have remained constant, yet the amount of data and the I/O bandwidths have gone up tremendously. Back when we added large file support to Solaris 2.6, creating a one-terabyte file was a big deal. It took a week and an awful lot of disks to create this file.*
 
@@ -99,7 +99,7 @@ There are a number of tools used in error detection and correction systems:
 
 - [Parity bits](https://techterms.com/definition/parity_bit) - Parity bits is a bit on the end of a string of bits that indicates whether there is an even or odd total number of ones in the string, on bit flip the parity will be off allowing for error detection. However if more than one bit were to flip the parity would reverse again and you would have a two bit error but not be able to detect it, this is why parity bits operate best on very small bits of data where the chances of multiple bit flips are very unlikely. In interesting use of parity bit is in raid arrays where using boolean math you can reconstruct the original data from one of the disks using the half the information on one other data disk and a disk of parity bits.
 
-- [Redundancy](https://techterms.com/definition/redundancy) - Is the idea of having a backup, nothing is better, if the world burned down than a virgin copy of your data safely squirreled away. Having a plan for when things inevitably hit the fan is worth more gold than in all the world, this is true in all of tech not just filesystems.
+- [Redundancy](https://techterms.com/definition/redundancy) - Redundancy is the idea of having a backup, nothing is better, if the world burned down than a virgin copy of your data safely squirreled away. Having a plan for when things inevitably hit the fan is worth more gold than in all the world, this is true in all of tech not just filesystems.
 
 The primary tool that ZFS uses extensively throughout is checksuming. ZFS uses checksums on every block of data that is written and the [entire data tree](https://pthree.org/2012/12/14/zfs-administration-part-ix-copy-on-write/) this means that if any data is corrupted the change will be obvious all the way up the tree and here we get to a trade off ZFS makes, trading error detection for speed. 
 
@@ -125,7 +125,7 @@ Most filesystems have atomicity for most operations, the major exceptions being 
 
 The creators of ZFS wanted to avoid this issue to quote Jeff Bonwick again:
 
->*We can thank the skeptics in the early days for that. In the very beginning, I said I wanted to make this file system a FSCK-less file system, though it seemed like an inaccessible goal, looking at the trends and how much storage people have. Pretty much everybody said it’s not possible, and that’s just not a good thing to say to me. My response was, “OK, by God, this is going to be a FSCK-less file system.” We shipped in ’05, and here we are in ’07, and we haven’t needed to FSCK anything yet.*
+>*"We can thank the skeptics in the early days for that. In the very beginning, I said I wanted to make this file system a FSCK-less file system, though it seemed like an inaccessible goal, looking at the trends and how much storage people have. Pretty much everybody said it’s not possible, and that’s just not a good thing to say to me. My response was, “OK, by God, this is going to be a FSCK-less file system.” We shipped in ’05, and here we are in ’07, and we haven’t needed to FSCK anything yet."*
 
 Also from [amc queue](http://queue.acm.org/detail.cfm?id=1317400).
 
@@ -133,7 +133,7 @@ To do so ZFS uses technique called [**C**opy-**O**n-**W**rite](http://storagegag
 
 ![alt text](https://pthree.org/wp-content/uploads/2012/12/copy-on-write.png)
 
-Although ZFS has many more interesting features I now want to focus on another filesystem that uses COW at also has many of the same interesting features btrfs. ZFS was the primary filesystem in the Solaris OS, solaris is not as widespread as it once was and although ZFS has been ported on to many different systems it does not seem likely at this time that ZFS will eat the world and it percentage of use currently is very small compared to heavy weights such as [ext4](#defaults) or [ntfs](#defaults). This is not to say that btrfs is a some big shot, it too is relatively niche but it has a much better chance due to its close ties to the Linux project.
+Although ZFS has many more interesting features I now want to focus on another filesystem that uses COW at also has many of the same interesting features [btrfs](#btrfs). ZFS was the primary filesystem in the Solaris OS, solaris is not as widespread as it once was and although ZFS has been ported on to many different systems it does not seem likely at this time that ZFS will eat the world and it percentage of use currently is very small compared to heavy weights such as [ext4](#defaults) or [ntfs](#defaults). This is not to say that btrfs is a some big shot, it too is relatively niche but it has a much better chance due to its close ties to the Linux project.
 
 ### <a name="btrfs">Btrfs</a> 
 
@@ -145,7 +145,7 @@ When you are trying to optimize a system there are trade offs, sure at first you
 
 One way to reduce total bits written is to use compression. When you compress all of your disk bound data you incur a performance penalty from having to compress and uncompress all your data but is is often worth it on systems with abundant RAM and CPU to do so, due to just how slow the disk is. Btrfs even provides [two](https://btrfs.wiki.kernel.org/index.php/Compression) different compression algorithms to optimize for different use cases, [ZLIB](https://www.zlib.net/) for slow, heavy compression and [LZO](http://www.oberhumer.com/opensource/lzo/) for fast, light compression. This compression is transparent meaning the average user can get it for free.
 
-Another thing that can be optimized for is disk usage, one way to optimize disk usage is deduplication is the process where the filesystem looks for duplicate chunks of data and deletes the copies and points to the same chunk for use. This is a form of compression that can do much to save disk space, it can be more dangerous because you are reducing the number of valid copies and interfering in the inner workings of some files. So it is best if deduplication also comes with strong data integrity features.
+Another thing that can be optimized is disk usage. One way to optimize disk usage is deduplication is the process where the filesystem looks for duplicate chunks of data and deletes the copies and points to the same chunk for use. This is a form of compression that can do much to save disk space, it can be more dangerous because you are reducing the number of valid copies and interfering in the inner workings of some files. So it is best if deduplication also comes with strong data integrity features.
 
 Btrfs is also [known](https://lwn.net/Articles/342892/) for its packing of file information in an efficient form, ideally btrfs puts a things close together for faster reads. This is a byproduct of its structure.
 
@@ -153,7 +153,7 @@ Btrfs is also [known](https://lwn.net/Articles/342892/) for its packing of file 
 
 ### <a name="defaults">The Defaults</a>
 
-All of the filesystems we have talked about thus far, are interesting and complex but not widely used primarily because they are not the defaults. The switching cost is high enough for most people that they never use anything but the defaults. This means that the defaults are by in large what people use because many never see the need for a different filesystem. The defaults for the [three major](https://www.netmarketshare.com/operating-system-market-share.aspx) operating systems are:
+All of the filesystems we have talked about thus far, are interesting and complex but not widely used, primarily because they are not the defaults. The switching cost is high enough for most people that they never use anything but the defaults. This means that the defaults are by in large what people use because many never see the need for a different filesystem. The defaults for the [three major](https://www.netmarketshare.com/operating-system-market-share.aspx) operating systems are:
 
 - Windows - [NTFS](https://support.microsoft.com/en-us/help/100108/overview-of-fat,-hpfs,-and-ntfs-file-systems) 
 - macOS - HFS+
@@ -161,11 +161,11 @@ All of the filesystems we have talked about thus far, are interesting and comple
 
 We won't talk about HFS+ because it is older and has become an amalgamation of things designed over the years to suit Apples needs, this is not to say that HFS+ isn't [interesting](https://arstechnica.com/apple/2011/07/mac-os-x-10-7/12/). Also it's end may be in sight with the announcement of [APFS](https://arstechnica.com/apple/2017/02/testing-out-snapshots-in-apples-next-generation-apfs-file-system/).
 
-I would however like to talk briefly about ext4 and NTFS. By the nature of being the defaults these filesystems have different goals from other filesystems. For example one of the major goals of ext4 is interoperability with ext2/3 and NTFS is backward compatible with many other part of Windows. This focus as on compatibility enviably leads to messier project than projects than systems designed standalone. Both of these filesystems come from a long history and were designed by their prospective organizations to solve the seam bursting increase in storage that was quickly reaching the limits of the older systems. 
+I would however like to talk briefly about ext4 and NTFS. By the nature of being the defaults these filesystems have different goals from other filesystems. For example one of the major goals of ext4 is interoperability with ext2/3 and NTFS is backward compatible with many other part of Windows. This focus as on compatibility enviably leads to messier project than projects than systems designed standalone. Both of these filesystems come from a long history and were designed by their prospective organizations; to solve the seam bursting increase in storage that was quickly overwhelming the limits of the older systems. 
 
 ### <a name="conclusion">Conclusion</a>
 
-In conclusion the differences in the features and the abilities of filesystems vary, sometimes greatly. But in general this is not important to the average user. What matters to a technical audience is if you are one day asked to design a storage system you are aware of what a filesystem is and what features are available in good filesystems so that you can find a filesystem that suits your needs, be that data integrity, performance, interoperability or even backward compatibility. It is my hope that is site can give you just enough of a background of filesystems to learn on your own I strongly encourage you go and try to parse your way through the recommended reading. Click on links, read lots, ask questions and above all else be curious.
+In conclusion the differences in the features and the abilities of filesystems vary, sometimes greatly. But in general this is not important to the average user. What matters to a technical audience is if you are one day asked to design a storage system you are aware of what a filesystem is and what features are available in good filesystems. So that you can find a filesystem that suits your needs, be that data integrity, performance, interoperability or even backward compatibility. It is my hope that this site can give you just enough of a background of filesystems to learn on your own I strongly encourage you go and try to parse your way through the recommended reading. Click on links, read lots, ask questions and above all else be curious.
 
 ### <a name="recommended_reading">Recommended Reading</a>   
 
@@ -185,9 +185,10 @@ In conclusion the differences in the features and the abilities of filesystems v
 	- [Btrfs Wiki](https://btrfs.wiki.kernel.org)
 
 
-
+<!---
 "I don't know where to put the encryption paragraph yet, suggestions welcome"
 
 ##### <a name="encryption">Encryption</a>
 
 "transition sentence" A good example of this is encryption, adding encryption will slow things down and add overhead but the cost may be worth it because the performance cuts are offset by gains in other areas. Not everyone believes that encryption should be handled at the filesystem level. Many users of filesystems without encryption get by just fine because regardless of the filesystem, you can still encrypt the whole disk allowing you to protect you data. But this a all or nothing solution it some time desirable to only encrypt some files. Some filesystems offer encryption transparently. 
+-->

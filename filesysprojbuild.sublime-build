@@ -1,0 +1,7 @@
+
+{
+	"shell_cmd": "bash ./slimbuild.sh",
+	"path": "/Users/gm/.gem/ruby/2.0.0/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin",
+	"env": {"LANG": "en_US.UTF-8"}
+
+}
